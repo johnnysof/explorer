@@ -10,7 +10,7 @@ body {
 
 .nav-search input {
 	width: 400px !important;
-	margin-right: 5px;	
+	margin-right: 5px;
 }
 
 .view_tx {
@@ -25,9 +25,6 @@ body {
 .block-next {
 	margin: 0;
 	margin-left: 10px;
-}
-#chart3 .jqplot-xaxis {
-	display: none;
 }
 
 .data {
@@ -163,4 +160,3 @@ tr {
 	position: absolute;
 	bottom: 0px;
 }
-
