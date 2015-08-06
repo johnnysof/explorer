@@ -1,38 +1,32 @@
 extends layout
 
 block content
-  script.
-    $(document).ready(function(){
-      var data = [
-        {
-          label: 'Top 1-25',
-          value: !{dista.percent},
-          color: "#d9534f"
-        },
-        {
-          label: 'Top 26-50',
-          value : !{distb.percent},
-          color : "#5cb85c"
-        },
-        {
-          label: 'Top 51-75',
-          value : !{distc.percent},
-          color : "#428bca"
-        },
-        {
-          label: 'Top 76-100',
-          value : !{distd.percent},
-          color : "#222"
-        },
-        {
-          label: '101+',
-          value : !{diste.percent},
-          color : "#222"
-        }
-      ];
-      var ctx = document.getElementById("wealthDonut").getContext("2d");
-      new Chart(ctx).Doughnut(data);
-    });
+  script(type='text/javascript').
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+    ['Wealth', 'Donut'],
+    ['Top 1-25',     !{dista.percent}],
+    ['Top 26-50',    !{distb.percent}],
+    ['Top 51-75',    !{distc.percent}],
+    ['Top 76-100',   !{distd.percent}],
+    ['101+',         !{diste.percent}]
+    ]);
+    var options = {
+      width: 500,
+      height: 500,
+      colors: ['#d9534f', '#5cb85c', '#428bca', '#222', '#222'],
+      pieSliceTextStyle: {
+        color: 'white',
+      },
+      legend: 'none',
+      pieHole: 0.45,
+    };
+    var chart = new google.visualization.PieChart(document.getElementById('wealthDonut'));
+    chart.draw(data, options);
+    }
+
   .col-xs-12.col-md-8
     .tabpanel
       ul.nav.nav-tabs(role='tablist')
@@ -87,5 +81,5 @@ block content
               td
               td.text-center #{(100 - parseFloat(distd.percent)).toFixed(2)}
       center
-        canvas(id="wealthDonut", width="300", height="300")
+        div(id="wealthDonut", width="500", height="500")
   .row.footer-margin
