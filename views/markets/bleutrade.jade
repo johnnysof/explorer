@@ -1,13 +1,39 @@
 extends menu
 
 block market_view
+  script(type='text/javascript').
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+    var ohlc = !{marketdata.data.chartdata}
+    var data = google.visualization.arrayToDataTable(ohlc, true);
+    var options = {
+      chartArea: {
+      height: 290,
+      width: '90%',
+      },
+      candlestick: {
+        fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
+        risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
+      },
+      vAxis:{minValue: 0},
+      hAxis:{showTextEvery: 4},
+      legend:'none'
+    };
+    var formatter_date = new google.visualization.DateFormat({formatType: 'short'});
+    formatter_date.format(data, 1);
+    var chart = new google.visualization.CandlestickChart(document.getElementById('chart'));
+    chart.draw(data, options);
+    }
   .row
-    .col-md-12  
-      .panel.panel-default
+    .hidden-xs.col-md-12  
+      #chart-panel.panel.panel-default
         .panel-heading
           strong #{settings.locale.bleutrade} - #{marketdata.coin}/#{marketdata.exchange} - #{settings.locale.mkt_hours}
           a(href='#')
-            span.fa.fa-line-chart.pull-right.view-chart-disabled.iquidus.market-toggle(data-toggle='tooltip', data-placement='bottom', title='#{settings.locale.mkt_no_chart}') 
+            span.fa.fa-th-list.pull-right.view-summary.iquidus.market-toggle(data-toggle='tooltip', data-placement='bottom', title='#{settings.locale.mkt_view_summary}') 
+        .panel-body
+          div(id="chart", style="width:100%;height:350px;")
         table.table.table-bordered.summary-table 
           thead
             tr
