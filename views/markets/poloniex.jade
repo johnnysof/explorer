@@ -1,47 +1,30 @@
 extends menu
 
 block market_view
-  script.
-    $(document).ready(function(){
-      $('#summary-panel').hide();
-      var ohlc = !{marketdata.data.chartdata}
-      var plot2 = $.jqplot('chart',[ohlc],{
-        seriesDefaults:{yaxis:'y2axis'},
-        axes: {
-          xaxis: {
-            renderer:$.jqplot.DateAxisRenderer,
-            tickOptions:{formatString:'%R'},
-            tickInterval: "2 hours",
-            
-          },
-          y2axis: {
-            tickOptions:{formatString:'%.8f'},
-          }
-        },
-        // To make a candle stick chart, set the "candleStick" option to true.
-        series: [
-          {
-            renderer:$.jqplot.OHLCRenderer,
-            rendererOptions:{ candleStick:true }
-          }
-        ],
-        highlighter: {
-          show: true,
-          showMarker:false,
-          tooltipAxes: 'xy',
-          yvalues: 4,
-          formatString:'<table class="jqplot-highlighter"> \
-          <tr><td>time:</td><td>%s</td></tr> \
-          <tr><td>open:</td><td>%s</td></tr> \
-          <tr><td>hi:</td><td>%s</td></tr> \
-          <tr><td>low:</td><td>%s</td></tr> \
-          <tr><td>close:</td><td>%s</td></tr></table>'
-        }
-      }); 
-      $(window).resize(function () { 
-        plot2.replot( { resetAxes: false } );
-      });
-    });        
+  script(type='text/javascript').
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(drawChart);
+    function drawChart() {
+    var ohlc = !{marketdata.data.chartdata}
+    var data = google.visualization.arrayToDataTable(ohlc, true);
+    var options = {
+      chartArea: {
+      height: 290,
+      width: '90%',
+      },
+      candlestick: {
+        fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
+        risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
+      },
+      vAxis:{minValue: 0},
+      hAxis:{showTextEvery: 4},
+      legend:'none'
+    };
+    var formatter_date = new google.visualization.DateFormat({formatType: 'short'});
+    formatter_date.format(data, 1);
+    var chart = new google.visualization.CandlestickChart(document.getElementById('chart'));
+    chart.draw(data, options);
+    }     
   .row
     .hidden-xs.col-md-12  
       #chart-panel.panel.panel-default
@@ -50,7 +33,7 @@ block market_view
           a(href='#')
             span.fa.fa-th-list.pull-right.view-summary.iquidus.market-toggle(data-toggle='tooltip', data-placement='bottom', title='#{settings.locale.mkt_view_summary}') 
         .panel-body
-          div#chart(style="width:100%;height:300px;")
+          div(id="chart", style="width:100%;height:350px;")
       #summary-panel.panel.panel-default
         .panel-heading
           strong #{settings.locale.poloniex} - #{marketdata.coin}/#{marketdata.exchange} - #{settings.locale.mkt_hours}
